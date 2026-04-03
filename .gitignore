@@ -1,0 +1,21 @@
+$content = @'
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+*.db
+*.sqlite3
+uploads/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+'@
+
+Set-Content -Path "U:\Ai-Powered_human Resource_management_system\.gitignore" -Value $content -Encoding UTF8
