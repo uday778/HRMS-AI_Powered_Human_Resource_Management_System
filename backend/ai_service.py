@@ -1,21 +1,26 @@
 import json
 import re
-from groq import Groq
+import httpx
 from config import settings
-
-def get_groq_client():
-    return Groq(api_key=settings.GROQ_API_KEY)
 
 def groq_chat(messages: list, model="llama-3.3-70b-versatile", temperature=0.3) -> str:
     try:
-        client = get_groq_client()
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=temperature,
-            max_tokens=1500,
-        )
-        return response.choices[0].message.content
+        with httpx.Client(timeout=60.0) as client:
+            response = client.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": model,
+                    "messages": messages,
+                    "temperature": temperature,
+                    "max_tokens": 1500,
+                }
+            )
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
     except Exception as e:
         return f"AI service error: {str(e)}"
 
@@ -49,7 +54,7 @@ Return a JSON object with exactly these keys:
 }}
 
 Return ONLY valid JSON, nothing else."""
-    
+
     result = groq_chat([{"role": "user", "content": prompt}])
     try:
         clean = re.sub(r'```json|```', '', result).strip()
@@ -71,16 +76,20 @@ Candidate Gaps: {', '.join(gaps)}
 
 Return a JSON array of 5 question strings. ONLY return valid JSON array, nothing else.
 Example: ["Question 1?", "Question 2?"]"""
-    
+
     result = groq_chat([{"role": "user", "content": prompt}])
     try:
         clean = re.sub(r'```json|```', '', result).strip()
         questions = json.loads(clean)
         return questions if isinstance(questions, list) else []
     except:
-        return ["Tell me about your background.", "What are your key technical skills?",
-                "Describe a challenging project.", "How do you handle deadlines?",
-                "Where do you see yourself in 5 years?"]
+        return [
+            "Tell me about your background.",
+            "What are your key technical skills?",
+            "Describe a challenging project you worked on.",
+            "How do you handle tight deadlines?",
+            "Where do you see yourself in 5 years?"
+        ]
 
 def analyze_leave_patterns(leave_data: list) -> str:
     if not leave_data:
@@ -104,11 +113,13 @@ Provide a 2-sentence risk assessment."""
 
 def generate_performance_summary(self_review: dict, manager_review: dict, employee_name: str) -> dict:
     self_avg = self_review.get("rating", 3)
-    mgr_avg = (manager_review.get("quality", 3) + manager_review.get("delivery", 3) +
-               manager_review.get("communication", 3) + manager_review.get("initiative", 3) +
-               manager_review.get("teamwork", 3)) / 5
-
-    mismatch = abs(self_avg - mgr_avg) > 1.5
+    mgr_avg = (
+        manager_review.get("quality", 3) +
+        manager_review.get("delivery", 3) +
+        manager_review.get("communication", 3) +
+        manager_review.get("initiative", 3) +
+        manager_review.get("teamwork", 3)
+    ) / 5
 
     prompt = f"""Generate a professional performance review summary for {employee_name}.
 
@@ -136,7 +147,7 @@ Return a JSON object with:
 }}
 
 Return ONLY valid JSON."""
-    
+
     result = groq_chat([{"role": "user", "content": prompt}])
     try:
         clean = re.sub(r'```json|```', '', result).strip()
@@ -144,9 +155,13 @@ Return ONLY valid JSON."""
     except:
         return {
             "summary": "Performance review generated. Please review manually.",
-            "mismatch_flag": mismatch,
-            "mismatch_note": "Rating mismatch detected." if mismatch else "",
-            "development_actions": ["Continue professional development", "Set SMART goals", "Seek regular feedback"]
+            "mismatch_flag": abs(self_avg - mgr_avg) > 1.5,
+            "mismatch_note": "Rating mismatch detected." if abs(self_avg - mgr_avg) > 1.5 else "",
+            "development_actions": [
+                "Continue professional development",
+                "Set SMART goals for next quarter",
+                "Seek regular feedback from peers"
+            ]
         }
 
 def chatbot_answer(question: str, context_docs: str, hr_email: str) -> str:
