@@ -136,3 +136,50 @@
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
+
+/* ===== RESPONSIVE ADDITIONS ===== */
+
+/* Mobile table scroll wrapper */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive grid helpers */
+@media (max-width: 640px) {
+  .data-table th,
+  .data-table td {
+    @apply px-3 py-2.5 text-xs;
+  }
+  
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Sidebar transition */
+.sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Modal bottom sheet on mobile */
+@media (max-width: 640px) {
+  .modal-sheet {
+    border-radius: 1.25rem 1.25rem 0 0;
+    max-height: 92vh;
+  }
+}
+
+/* Touch friendly buttons on mobile */
+@media (max-width: 640px) {
+  button {
+    min-height: 36px;
+  }
+}
+
+/* Responsive page padding */
+@media (max-width: 640px) {
+  .page-content {
+    padding: 1rem;
+  }
+}
