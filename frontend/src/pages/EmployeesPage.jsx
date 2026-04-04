@@ -186,26 +186,67 @@ export default function EmployeesPage() {
     </div>
   )
 }
-
 function AddEmployeeModal({ open, onClose, onSave }) {
-  const [form, setForm] = useState({ name: '', email: '', designation: '', department: '', joining_date: '', contact: '', skills: '' })
+  const [form, setForm] = useState({
+    name: '', email: '', designation: '', department: '',
+    joining_date: '', contact: '', skills: '', password: 'pass123', role: 'employee'
+  })
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
+    setError('')
     try {
-      await api.post('/employees', form)
-      onSave(); onClose()
+      // Step 1 — Create user account
+      let userId = null
+      try {
+        const userRes = await api.post('/auth/register', {
+          email: form.email,
+          password: form.password,
+          role: form.role
+        })
+        userId = userRes.data.id
+      } catch (err) {
+        // User might already exist — try to continue
+        console.log('User may already exist:', err.response?.data?.detail)
+      }
+
+      // Step 2 — Create employee linked to user
+      await api.post('/employees', {
+        name: form.name,
+        email: form.email,
+        designation: form.designation,
+        department: form.department,
+        joining_date: form.joining_date,
+        contact: form.contact,
+        skills: form.skills,
+        user_id: userId
+      })
+
+      onSave()
+      onClose()
+      setForm({
+        name: '', email: '', designation: '', department: '',
+        joining_date: '', contact: '', skills: '', password: 'pass123', role: 'employee'
+      })
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error creating employee')
-    } finally { setLoading(false) }
+      setError(err.response?.data?.detail || 'Error creating employee')
+    } finally {
+      setLoading(false) 
+    }
   }
 
   return (
     <Modal open={open} onClose={onClose} title="Add Employee" size="md">
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="text-sm text-destructive bg-destructive/5 border border-destructive/20 rounded-lg px-3 py-2">
+            {error}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-4">
           <Input label="Full Name *" value={form.name} onChange={e => set('name', e.target.value)} required />
           <Input label="Email *" type="email" value={form.email} onChange={e => set('email', e.target.value)} required />
@@ -216,8 +257,17 @@ function AddEmployeeModal({ open, onClose, onSave }) {
           </Select>
           <Input label="Joining Date" type="date" value={form.joining_date} onChange={e => set('joining_date', e.target.value)} />
           <Input label="Contact" value={form.contact} onChange={e => set('contact', e.target.value)} />
+          <Input label="Login Password" value={form.password} onChange={e => set('password', e.target.value)} placeholder="Default: pass123" />
+          <Select label="Role" value={form.role} onChange={e => set('role', e.target.value)}>
+            <option value="employee">Employee</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </Select>
         </div>
         <Input label="Skills (comma-separated)" value={form.skills} onChange={e => set('skills', e.target.value)} placeholder="React, Python, SQL" />
+        <div className="bg-accent/50 rounded-lg p-3 text-xs text-muted-foreground">
+          Employee will be able to login with their email and the password you set above.
+        </div>
         <div className="flex justify-end gap-3 pt-2">
           <Button variant="outline" type="button" onClick={onClose}>Cancel</Button>
           <Button type="submit" loading={loading}>Create Employee</Button>
