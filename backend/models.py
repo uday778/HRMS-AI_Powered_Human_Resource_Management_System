@@ -16,6 +16,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(UserRole), default=UserRole.employee)
     is_active = Column(Boolean, default=True)
+    must_change_password = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     employee = relationship("Employee", back_populates="user", uselist=False)
 

@@ -206,7 +206,8 @@ function AddEmployeeModal({ open, onClose, onSave }) {
         const userRes = await api.post('/auth/register', {
           email: form.email,
           password: form.password,
-          role: form.role
+          role: form.role,
+          must_change_password: true  // ← forces password change on first login
         })
         userId = userRes.data.id
       } catch (err) {
@@ -235,7 +236,7 @@ function AddEmployeeModal({ open, onClose, onSave }) {
     } catch (err) {
       setError(err.response?.data?.detail || 'Error creating employee')
     } finally {
-      setLoading(false) 
+      setLoading(false)
     }
   }
 
