@@ -1,5 +1,6 @@
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { useEffect, useRef } from 'react'
 
 export function cn(...inputs) { return twMerge(clsx(inputs)) }
 
@@ -116,47 +117,70 @@ export function Textarea({ label, error, className, ...props }) {
 }
 
 export function Modal({ open, onClose, title, children, size = 'md' }) {
+  const scrollRef = useRef(null)
+
+  // Always scroll to top when modal opens
+  useEffect(() => {
+    if (open && scrollRef.current) {
+      scrollRef.current.scrollTop = 0
+    }
+  }, [open])
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [open])
+
   if (!open) return null
+
   const sizes = {
-    sm: 'max-w-md',
-    md: 'max-w-xl',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl'
+    sm: 'sm:max-w-md',
+    md: 'sm:max-w-xl',
+    lg: 'sm:max-w-2xl',
+    xl: 'sm:max-w-4xl',
   }
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal box */}
       <div className={cn(
-        'relative bg-card w-full border border-border animate-fadeup shadow-2xl',
-        'rounded-t-2xl sm:rounded-2xl',
-        'max-h-[92vh] sm:max-h-[85vh]',
-        sm_sizes[size] || sizes[size]
+        'relative bg-card w-full border border-border shadow-2xl rounded-2xl animate-fadeup',
+        'flex flex-col',
+        sizes[size],
+        'max-h-[90vh]'
       )}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border sticky top-0 bg-card rounded-t-2xl sm:rounded-t-2xl z-10">
+        {/* Sticky Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border flex-shrink-0 bg-card rounded-t-2xl">
           <h2 className="font-display font-semibold text-base sm:text-lg">{title}</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all text-lg leading-none"
+            className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all text-xl leading-none flex-shrink-0"
           >
             ×
           </button>
         </div>
-        {/* Scrollable body */}
-        <div className="overflow-y-auto px-5 py-5" style={{ maxHeight: 'calc(92vh - 65px)' }}>
+
+        {/* Scrollable Content — always starts from top */}
+        <div
+          ref={scrollRef}
+          className="overflow-y-auto flex-1 px-5 py-5"
+        >
           {children}
         </div>
       </div>
     </div>
   )
-}
-
-// Helper for responsive modal sizes
-const sm_sizes = {
-  sm: 'sm:max-w-md',
-  md: 'sm:max-w-xl',
-  lg: 'sm:max-w-2xl',
-  xl: 'sm:max-w-4xl',
 }
 
 export function PageHeader({ title, subtitle, action }) {
@@ -196,7 +220,11 @@ export function StatCard({ label, value, icon: Icon, trend, color = 'primary' })
 }
 
 export function Spinner() {
-  return <div className="flex items-center justify-center p-8"><div className="spinner" /></div>
+  return (
+    <div className="flex items-center justify-center p-8">
+      <div className="spinner" />
+    </div>
+  )
 }
 
 export function AiBadge({ children }) {
@@ -262,8 +290,8 @@ export function EmptyState({ icon: Icon, title, desc }) {
 
 export function ResponsiveTable({ children }) {
   return (
-    <div className="overflow-x-auto -mx-0">
-      <table className="w-full data-table min-w-[600px]">
+    <div className="overflow-x-auto">
+      <table className="w-full data-table min-w-[500px]">
         {children}
       </table>
     </div>
