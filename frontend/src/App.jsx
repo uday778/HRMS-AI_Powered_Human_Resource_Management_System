@@ -11,6 +11,7 @@ import PerformancePage from './pages/PerformancePage'
 import OnboardingPage from './pages/OnboardingPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import OrgChartPage from './pages/OrgChartPage'
+import OfferLettersPage from './pages/OfferLettersPage';
 
 function PrivateRoute({ children, adminOnly = false }) {
   const { user, isAdmin } = useAuth()
@@ -41,8 +42,8 @@ export default function App() {
             <Route path="leaves" element={<LeavesPage />} />
             <Route path="performance" element={<PerformancePage />} />
             <Route path="onboarding" element={<OnboardingPage />} />
-            <Route path="analytics" element={<PrivateRoute adminOnly><AnalyticsPage />
-            </PrivateRoute>} />
+            <Route path="analytics" element={<PrivateRoute adminOnly><AnalyticsPage /></PrivateRoute>} />
+            <Route path="offer-letters" element={<PrivateRoute adminOnly><OfferLettersPage /></PrivateRoute>} />
           </Route>
         </Routes>
       </BrowserRouter>

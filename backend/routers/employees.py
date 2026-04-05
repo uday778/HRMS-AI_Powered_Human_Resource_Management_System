@@ -9,6 +9,9 @@ from typing import Optional, List
 from datetime import date
 from database import get_db
 from security import get_current_user, require_admin
+from services.offer_letter_service import (
+    generate_offer_letter_ai, generate_pdf, send_offer_email
+)
 from ai_service import generate_employee_bio
 import models
 
@@ -78,6 +81,39 @@ def create_employee(emp: EmployeeCreate, db: Session = Depends(get_db), current_
     db.add(new_emp)
     db.commit()
     db.refresh(new_emp)
+
+    # Auto-generate and send offer letter if email is provided
+    if new_emp.email:
+        try:
+            from fastapi.concurrency import run_in_threadpool
+            import threading
+            def _send_offer():
+                try:
+                    content_letter = generate_offer_letter_ai(
+                        candidate_name=new_emp.name,
+                        role=new_emp.designation or "Team Member",
+                        department=new_emp.department or "General",
+                        salary=0,
+                        joining_date=str(new_emp.joining_date),
+                        company_name="HRMS Technologies",
+                    )
+                    pdf_bytes = generate_pdf(content_letter, new_emp.name, "HRMS Technologies")
+                    send_offer_email(
+                        to_email=new_emp.email,
+                        candidate_name=new_emp.name,
+                        role=new_emp.designation or "Team Member",
+                        company_name="HRMS Technologies",
+                        offer_content=content_letter,
+                        pdf_bytes=pdf_bytes,
+                        joining_date=str(new_emp.joining_date),
+                    )
+                except Exception as ex:
+                    import logging
+                    logging.getLogger(__name__).error(f"Auto offer letter failed: {ex}")
+            threading.Thread(target=_send_offer, daemon=True).start()
+        except Exception:
+            pass
+
     return _emp_to_dict(new_emp)
 
 @router.get("/departments")

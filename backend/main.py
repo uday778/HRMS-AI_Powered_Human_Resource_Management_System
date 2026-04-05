@@ -4,7 +4,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from routers import auth, employees, recruitment, leaves, performance, onboarding, analytics, notifications
+from routers import (
+    auth, employees, recruitment, leaves,
+    performance, onboarding, analytics,
+    notifications, offer_letters
+)
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,14 +22,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
-app.include_router(employees.router, prefix="/api/employees", tags=["Employees"])
-app.include_router(recruitment.router, prefix="/api/recruitment", tags=["Recruitment"])
-app.include_router(leaves.router, prefix="/api/leaves", tags=["Leaves"])
-app.include_router(performance.router, prefix="/api/performance", tags=["Performance"])
-app.include_router(onboarding.router, prefix="/api/onboarding", tags=["Onboarding"])
-app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(auth.router,          prefix="/api/auth",          tags=["Auth"])
+app.include_router(employees.router,     prefix="/api/employees",     tags=["Employees"])
+app.include_router(recruitment.router,   prefix="/api/recruitment",   tags=["Recruitment"])
+app.include_router(leaves.router,        prefix="/api/leaves",        tags=["Leaves"])
+app.include_router(performance.router,   prefix="/api/performance",   tags=["Performance"])
+app.include_router(onboarding.router,    prefix="/api/onboarding",    tags=["Onboarding"])
+app.include_router(analytics.router,     prefix="/api/analytics",     tags=["Analytics"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
+app.include_router(offer_letters.router, prefix="/api/offer-letters", tags=["Offer Letters"])
 
 @app.get("/")
 def root():

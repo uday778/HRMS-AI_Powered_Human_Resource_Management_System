@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import {
   LayoutDashboard, Users, Briefcase, Calendar, Star,
   BookOpen, BarChart3, GitBranch, LogOut, Sparkles,
-  ChevronRight, Key, Menu, X
+  ChevronRight, Key, Menu, X, Mail
 } from 'lucide-react'
 import NotificationCenter from './NotificationCenter'
 
@@ -17,6 +17,7 @@ const navItems = [
   { to: '/performance', icon: Star, label: 'Performance' },
   { to: '/onboarding', icon: BookOpen, label: 'Onboarding' },
   { to: '/analytics', icon: BarChart3, label: 'Analytics', adminOnly: true },
+  { to: '/offer-letters', icon: Mail, label: 'Offer Letters', adminOnly: true },
 ]
 
 export default function Layout() {

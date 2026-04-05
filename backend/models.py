@@ -234,3 +234,38 @@ class Notification(Base):
     action_url = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     user = relationship("User", foreign_keys=[user_id])
+
+
+# ─── Offer Letter ─────────────────────────────────────────────────────────────
+class OfferLetterStatus(str, enum.Enum):
+    draft = "draft"
+    sent = "sent"
+
+
+class OfferLetterTemplate(Base):
+    __tablename__ = "offer_letter_templates"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    offer_letters = relationship("OfferLetter", back_populates="template")
+
+
+class OfferLetter(Base):
+    __tablename__ = "offer_letters"
+    id = Column(Integer, primary_key=True, index=True)
+    candidate_id = Column(Integer, ForeignKey("candidates.id"), nullable=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=True)
+    template_id = Column(Integer, ForeignKey("offer_letter_templates.id"), nullable=True)
+    generated_content = Column(Text, nullable=False)
+    salary = Column(Float)
+    role = Column(String)
+    joining_date = Column(Date, nullable=True)
+    status = Column(Enum(OfferLetterStatus), default=OfferLetterStatus.draft)
+    pdf_path = Column(String, nullable=True)
+    recipient_email = Column(String, nullable=True)
+    recipient_name = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    template = relationship("OfferLetterTemplate", back_populates="offer_letters")
+    candidate = relationship("Candidate", foreign_keys=[candidate_id])
+    employee = relationship("Employee", foreign_keys=[employee_id])
