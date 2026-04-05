@@ -1,9 +1,11 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import date
 from database import get_db
-from auth import get_current_user, require_admin
+from security import get_current_user, require_admin
 from ai_service import generate_hr_insights
 import models
 

@@ -1,3 +1,5 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 """
 Smart notification triggers — run these on schedule or after key events.
 Each function checks a business condition and fires notifications if needed.

@@ -1,3 +1,5 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
@@ -5,7 +7,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from database import get_db
-from auth import get_current_user, require_admin, require_manager_or_admin
+from security import get_current_user, require_admin, require_manager_or_admin
 from ai_service import generate_performance_summary
 import models
 import io

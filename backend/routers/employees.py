@@ -1,3 +1,5 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import os, csv, io
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
 from fastapi.responses import StreamingResponse
@@ -6,7 +8,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import date
 from database import get_db
-from auth import get_current_user, require_admin
+from security import get_current_user, require_admin
 from ai_service import generate_employee_bio
 import models
 

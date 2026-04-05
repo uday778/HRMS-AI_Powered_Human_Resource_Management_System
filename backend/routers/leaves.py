@@ -1,10 +1,12 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date
 from database import get_db
-from auth import get_current_user, require_manager_or_admin
+from security import get_current_user, require_manager_or_admin
 from ai_service import analyze_leave_patterns, predict_capacity_risk
 import models
 

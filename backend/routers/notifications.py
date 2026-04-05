@@ -1,9 +1,11 @@
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from database import get_db
-from auth import get_current_user, require_admin
+from security import get_current_user, require_admin
 import models
 from services.notification_service import (
     get_user_notifications,
