@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 from database import get_db
-from auth import get_current_user, require_admin, require_manager_or_admin
+from security import get_current_user, require_admin, require_manager_or_admin
 from ai_service import score_resume, generate_interview_questions
 import models
 
