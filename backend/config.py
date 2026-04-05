@@ -8,6 +8,12 @@ class Settings(BaseSettings):
     HR_EMAIL: str = "hr@company.com"
     DATABASE_URL: str = "sqlite:///./hrms.db"
 
+    # SMTP Email settings (optional — only for critical notifications)
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_EMAIL: str = ""
+    SMTP_PASSWORD: str = ""
+
     class Config:
         env_file = ".env"
 

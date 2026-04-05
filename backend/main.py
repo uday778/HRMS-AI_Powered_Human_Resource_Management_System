@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from routers import auth, employees, recruitment, leaves, performance, onboarding, analytics
+from routers import auth, employees, recruitment, leaves, performance, onboarding, analytics, notifications
 
 Base.metadata.create_all(bind=engine)
 
@@ -25,6 +25,7 @@ app.include_router(leaves.router, prefix="/api/leaves", tags=["Leaves"])
 app.include_router(performance.router, prefix="/api/performance", tags=["Performance"])
 app.include_router(onboarding.router, prefix="/api/onboarding", tags=["Onboarding"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
 
 @app.get("/")
 def root():

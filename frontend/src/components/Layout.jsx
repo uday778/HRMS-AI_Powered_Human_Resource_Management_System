@@ -6,6 +6,7 @@ import {
   BookOpen, BarChart3, GitBranch, LogOut, Sparkles,
   ChevronRight, Key, Menu, X
 } from 'lucide-react'
+import NotificationCenter from './NotificationCenter'
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', exact: true },
@@ -39,7 +40,6 @@ export default function Layout() {
           <div className="font-display font-bold text-white text-lg leading-none">HRMS</div>
           <div className="text-xs text-white/40 mt-0.5">AI-Powered</div>
         </div>
-        {/* Close button — mobile only */}
         <button
           onClick={() => setSidebarOpen(false)}
           className="ml-auto lg:hidden text-white/40 hover:text-white"
@@ -75,8 +75,14 @@ export default function Layout() {
         ))}
       </nav>
 
-      {/* User section */}
+      {/* User */}
       <div className="px-3 pb-4 border-t border-white/10 pt-4">
+        {/* Notifications in sidebar */}
+        <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white/5 mb-2">
+          <span className="text-xs text-white/50">Notifications</span>
+          <NotificationCenter />
+        </div>
+
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5">
           <div className="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {user?.email?.[0]?.toUpperCase()}
@@ -85,18 +91,10 @@ export default function Layout() {
             <div className="text-sm text-white truncate">{user?.email}</div>
             <div className="text-xs text-white/40 capitalize">{user?.role}</div>
           </div>
-          <button
-            onClick={handleChangePassword}
-            title="Change Password"
-            className="text-white/30 hover:text-white/70 transition-colors p-1"
-          >
+          <button onClick={handleChangePassword} title="Change Password" className="text-white/30 hover:text-white/70 transition-colors p-1">
             <Key size={14} />
           </button>
-          <button
-            onClick={handleLogout}
-            title="Logout"
-            className="text-white/30 hover:text-white/70 transition-colors p-1"
-          >
+          <button onClick={handleLogout} title="Logout" className="text-white/30 hover:text-white/70 transition-colors p-1">
             <LogOut size={15} />
           </button>
         </div>
@@ -106,35 +104,26 @@ export default function Layout() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar — desktop always visible, mobile slide-in */}
+      {/* Sidebar */}
       <aside className={`
         sidebar flex-shrink-0 flex flex-col h-full
         fixed lg:relative z-40 lg:z-auto
-        transition-transform duration-300 ease-in-out
-        w-64
+        transition-transform duration-300 ease-in-out w-64
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <SidebarContent />
       </aside>
 
-      {/* Main area */}
+      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-card border-b border-border flex-shrink-0">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-muted transition-colors"
-          >
+          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-muted transition-colors">
             <Menu size={20} />
           </button>
           <div className="flex items-center gap-2">
@@ -143,7 +132,10 @@ export default function Layout() {
             </div>
             <span className="font-display font-bold text-sm">HRMS</span>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1">
+            <div className="bg-slate-800 rounded-xl p-1">
+              <NotificationCenter />
+            </div>
             <button onClick={handleChangePassword} className="p-2 rounded-lg hover:bg-muted">
               <Key size={16} className="text-muted-foreground" />
             </button>
