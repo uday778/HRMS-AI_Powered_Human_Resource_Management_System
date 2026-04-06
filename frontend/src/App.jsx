@@ -11,7 +11,7 @@ import PerformancePage from './pages/PerformancePage'
 import OnboardingPage from './pages/OnboardingPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import OrgChartPage from './pages/OrgChartPage'
-import OfferLettersPage from './pages/OfferLettersPage';
+import OfferLettersPage from './pages/OfferLettersPage'
 
 function PrivateRoute({ children, adminOnly = false }) {
   const { user, isAdmin } = useAuth()

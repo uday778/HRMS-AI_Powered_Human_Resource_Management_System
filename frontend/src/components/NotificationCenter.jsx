@@ -137,12 +137,12 @@ export default function NotificationCenter() {
       {/* Bell Button */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="relative p-2 rounded-xl hover:bg-white/10 transition-colors group"
+        className="relative p-2 rounded-lg hover:bg-muted transition-colors group"
         title="Notifications"
       >
         <Bell
           size={18}
-          className={`transition-all ${open ? 'text-white' : 'text-white/60 group-hover:text-white'}`}
+          className={`transition-all ${open ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`}
         />
         {unreadCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-lg animate-pulse">
@@ -153,7 +153,7 @@ export default function NotificationCenter() {
 
       {/* Panel */}
       {open && (
-        <div className="absolute right-0 top-12 w-[380px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-border z-50 overflow-hidden animate-fadeup">
+        <div className="absolute right-0 top-11 w-[360px] max-w-[calc(100vw-1rem)] bg-white rounded-2xl shadow-2xl border border-border z-50 overflow-hidden animate-fadeup">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-gradient-to-r from-primary/5 to-purple-500/5">
             <div className="flex items-center gap-2">
